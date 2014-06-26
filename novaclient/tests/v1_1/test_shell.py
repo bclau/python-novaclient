@@ -2052,7 +2052,8 @@ class ShellTest(utils.TestCase):
         self.run_command('keypair-add test')
         self.assert_called('POST', '/os-keypairs',
                            {'keypair':
-                               {'name': 'test'}})
+                               {'name': 'test',
+                                'key_type': 'ssh'}})
 
     @mock.patch.object(builtins, 'open',
              mock.mock_open(read_data='FAKE_PUBLIC_KEY'))
@@ -2061,7 +2062,8 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/os-keypairs',
                            {'keypair':
                               {'public_key': 'FAKE_PUBLIC_KEY',
-                               'name': 'test'}})
+                               'name': 'test',
+                               'key_type': 'ssh'}})
 
     def test_keypair_list(self):
         self.run_command('keypair-list')

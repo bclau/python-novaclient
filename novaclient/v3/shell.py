@@ -1992,10 +1992,14 @@ def do_secgroup_delete_group_rule(cs, args):
     help='Path to a public ssh key.')
 @utils.arg('--pub_key',
     help=argparse.SUPPRESS)
+@utils.arg('--key-type', metavar='<key-type>', default='ssh',
+           help='Keypair type. Can be ssh or x509.')
+@utils.arg('--key_type', help=argparse.SUPPRESS)
 def do_keypair_add(cs, args):
     """Create a new key pair for use with servers."""
     name = args.name
     pub_key = args.pub_key
+    key_type = args.key_type
 
     if pub_key:
         try:
@@ -2005,7 +2009,7 @@ def do_keypair_add(cs, args):
             raise exceptions.CommandError("Can't open or read '%s': %s" %
                                                           (pub_key, e))
 
-    keypair = cs.keypairs.create(name, pub_key)
+    keypair = cs.keypairs.create(name, pub_key, key_type)
 
     if not pub_key:
         private_key = keypair.private_key
@@ -2022,7 +2026,7 @@ def do_keypair_delete(cs, args):
 def do_keypair_list(cs, args):
     """Print a list of keypairs for a user"""
     keypairs = cs.keypairs.list()
-    columns = ['Name', 'Fingerprint']
+    columns = ['Name', 'Type', 'Fingerprint']
     utils.print_list(keypairs, columns)
 
 
