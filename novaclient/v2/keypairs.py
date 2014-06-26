@@ -65,14 +65,16 @@ class KeypairManager(base.ManagerWithFind):
         return self._get("/%s/%s" % (self.keypair_prefix, base.getid(keypair)),
                          "keypair")
 
-    def create(self, name, public_key=None):
+    def create(self, name, public_key=None, key_type='ssh'):
         """
         Create a keypair
 
         :param name: name for the keypair to create
         :param public_key: existing public key to import
+        :param key_type: keypair type to create
         """
-        body = {'keypair': {'name': name}}
+        body = {'keypair': {'name': name,
+                            'key_type': key_type}}
         if public_key:
             body['keypair']['public_key'] = public_key
         return self._create('/%s' % self.keypair_prefix, body, 'keypair')

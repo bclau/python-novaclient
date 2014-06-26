@@ -2297,19 +2297,40 @@ class ShellTest(utils.TestCase):
                           self.run_command,
                           "ssh --ipv6 --network nonexistent server")
 
-    def test_keypair_add(self):
-        self.run_command('keypair-add test')
+    def _check_keypair_add(self, expected_key_type, extra_args=''):
+        self.run_command('keypair-add %s test' % extra_args)
         self.assert_called('POST', '/os-keypairs',
                            {'keypair':
-                               {'name': 'test'}})
+                               {'name': 'test',
+                                'key_type': expected_key_type}})
+
+    def test_keypair_add(self):
+        self._check_keypair_add('ssh')
+
+    def test_keypair_add_ssh(self):
+        self._check_keypair_add('ssh', '--key-type ssh')
+
+    def test_keypair_add_ssh_x509(self):
+        self._check_keypair_add('x509', '--key-type x509')
 
     @mock.patch.object(builtins, 'open',
                        mock.mock_open(read_data='FAKE_PUBLIC_KEY'))
-    def test_keypair_import(self):
-        self.run_command('keypair-add --pub-key test.pub test')
+    def _check_keypair_import(self, expected_key_type, extra_args=''):
+        self.run_command('keypair-add --pub-key test.pub %s test' % extra_args)
         self.assert_called(
             'POST', '/os-keypairs', {
-                'keypair': {'public_key': 'FAKE_PUBLIC_KEY', 'name': 'test'}})
+                'keypair': {'public_key': 'FAKE_PUBLIC_KEY',
+                            'name': 'test',
+                            'key_type': expected_key_type}})
+
+    def test_keypair_import(self):
+        self._check_keypair_import('ssh')
+
+    def test_keypair_import_ssh(self):
+        self._check_keypair_import('ssh', '--key-type ssh')
+
+    def test_keypair_import_x509(self):
+        self._check_keypair_import('x509', '--key-type x509')
 
     def test_keypair_list(self):
         self.run_command('keypair-list')
