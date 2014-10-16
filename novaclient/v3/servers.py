@@ -308,6 +308,12 @@ class Server(base.Resource):
                                   block_migration,
                                   disk_over_commit)
 
+    def failover_migrate(self, host):
+        """
+        Registers a failover request of a running instance to a new machine.
+        """
+        self.manager.failover_migrate(self, host)
+
     def reset_state(self, state='error'):
         """
         Reset the state of an instance to active or error.
@@ -933,6 +939,16 @@ class ServerManager(base.BootingManagerWithFind):
                      {'host': host,
                       'block_migration': block_migration,
                       'disk_over_commit': disk_over_commit})
+
+    def failover_migrate(self, server, host):
+        """
+        Registers a failover request of a running instance to a new machine.
+
+        :param server: instance id which comes from nova list.
+        :param host: destination host name.
+
+        """
+        self._action('migrate_failover', server, {'host': host})
 
     def reset_state(self, server, state='error'):
         """

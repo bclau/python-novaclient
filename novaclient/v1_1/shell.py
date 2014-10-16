@@ -2854,6 +2854,13 @@ def do_live_migration(cs, args):
 
 
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
+@utils.arg('host', metavar='<host>', help=_('Destination host name.'))
+def do_failover_migration(cs, args):
+    """Registers a failover request of a running instance to a new machine."""
+    _find_server(cs, args.server).failover_migrate(args.host)
+
+
+@utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
 @utils.arg('--active', action='store_const', dest='state',
            default='error', const='active',
            help=_('Request the server be reset to "active" state instead '
